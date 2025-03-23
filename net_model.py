@@ -30,7 +30,6 @@ def set_all_seeds(seed=42):
     tf.random.set_seed(seed)
     np.random.seed(seed)
     random.seed(seed)
-
     # Ensure deterministic operations on GPU
     tf.config.experimental.enable_op_determinism()
 
@@ -690,7 +689,31 @@ def Spop_known_S1(S1_values, log_a, log_phi, theta, sup):
     
     return pgf_result[0,0,:]
 
-# Função de sobrevivência base do modelo (exponencial por partes)
+def fpop_known_S1_f1(S1_values, f1_values, log_a, log_phi, theta, sup):
+    '''
+        Population density function when the array of non cured survival probabilities and densities
+        have already been computed.
+    '''
+    # Reshape the object to a column vector
+    S1_values = np.reshape(S1_values, (len(S1_values), 1))
+    f1_values = np.reshape(f1_values, (len(f1_values), 1))
+    # Removes the zero from the support, since when we take the derivative the m falls from the exponent multiplying
+    sup = sup[sup > 0]
+
+    # Perform opperation S1^sup (for the probability generation function)
+    pgf_coef = sup*S1_values**(sup-1)*f1_values
+    # Reshape the probability generation function coefficients to meet the shape of the probabilities
+    pgf_coef = pgf_coef.T[np.newaxis, :, :] # Shape: (1, <sup size>, <number of times>)
+
+    f_sup = mps.pmf(sup, log_a, log_phi, theta, sup)
+    # Reshape the probabilities to meet the pgf_coef shape
+    f_sup = f_sup[:, :, np.newaxis] # Shape: (<theta size>, <sup_size>, 1)
+    
+    pgf_result = np.einsum("ijk,kjl->ilk", pgf_coef, f_sup) # Shape: (1, 1, <number of times>)
+    
+    return pgf_result[0,0,:]
+    
+# Função de sobrevivência populacional do modelo (marginal nos números de causas latentes)
 def Spop(t, alpha, s, log_a, log_phi, theta, sup):
     '''
         Population survival function when the array of non cured survival probabilities have not been computed yet.
@@ -699,3 +722,15 @@ def Spop(t, alpha, s, log_a, log_phi, theta, sup):
     S1_values = S1(t, alpha, s)
     # Just call the Spop with S1 known
     return Spop_known_S1(S1_values, log_a, log_phi, theta, sup)
+
+
+# Função densidade populacional do modelo (marginal nos números de causas latentes)
+def fpop(t, alpha, s, log_a, log_phi, theta, sup):
+    '''
+        Population density function when the array of non cured survival probabilities and densities have not been computed yet.
+    '''
+    # Precompute the actual non cured survival probabilities
+    S1_values = S1(t, alpha, s)
+    f1_values = f1(t, alpha, s)
+    # Just call the Spop with S1 known
+    return fpop_known_S1_f1(S1_values, f1_values, log_a, log_phi, theta, sup)

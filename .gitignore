@@ -1,1 +1,4 @@
 ./OASIS - Small Dataset/mri_train_test.npz
+.ipynb_checkpoints
+__pycache__
+EM_data
