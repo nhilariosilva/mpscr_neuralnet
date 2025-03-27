@@ -534,29 +534,53 @@ def sample_single_bootstrap_scenario3(distribution, file_index, train_labels, te
         )
         poisson_data.to_csv("{}/poisson/{}".format(directory, filename), index = False)
     
-    # ---------------------------- Borel ----------------------------
-    if(distribution == "borel"):
-        # Borel - Training data
-        theta_train_borel = get_theta(log_a_borel, log_phi_borel, C_borel, C_inv_borel, sup_borel, p_train, theta_min = theta_min_borel, theta_max = theta_max_borel)
-        m_train_borel, t_train_borel, delta_train_borel, cured_train_borel = \
-            generate_data(log_a_borel, log_phi_borel, theta_train_borel, sup_borel, low_c, high_c)
-        # Borel - Validation data
-        theta_val_borel = get_theta(log_a_borel, log_phi_borel, C_borel, C_inv_borel, sup_borel, p_val, theta_min = theta_min_borel, theta_max = theta_max_borel)
-        m_val_borel, t_val_borel, delta_val_borel, cured_val_borel = \
-            generate_data(log_a_borel, log_phi_borel, theta_val_borel, sup_borel, low_c, high_c)
-        # Borel - Test data
-        theta_test_borel = get_theta(log_a_borel, log_phi_borel, C_borel, C_inv_borel, sup_borel, p_test, theta_min = theta_min_borel, theta_max = theta_max_borel)
-        m_test_borel, t_test_borel, delta_test_borel, cured_test_borel = \
-            generate_data(log_a_borel, log_phi_borel, theta_test_borel, sup_borel, low_c, high_c)
-        # Save the DataFrame with the simulated values for the Borel
-        borel_data = join_datasets(
+    # ---------------------------- Logarithmic ----------------------------
+    if(distribution == "logarithmic"):
+        # Logarithmic - Training data
+        theta_train_log = get_theta(log_a_log, log_phi_log, C_log, C_inv_log, sup_log, p_train, theta_min = theta_min_log, theta_max = theta_max_log)
+        m_train_log, t_train_log, delta_train_log, cured_train_log = \
+            generate_data(log_a_log, log_phi_log, theta_train_log, sup_log, low_c, high_c)
+        # Logarithmic - Validation data
+        theta_val_log = get_theta(log_a_log, log_phi_log, C_log, C_inv_log, sup_log, p_val, theta_min = theta_min_log, theta_max = theta_max_log)
+        m_val_log, t_val_log, delta_val_log, cured_val_log = \
+            generate_data(log_a_log, log_phi_log, theta_val_log, sup_log, low_c, high_c)
+        # Logarithmic - Test data
+        theta_test_log = get_theta(log_a_log, log_phi_log, C_log, C_inv_log, sup_log, p_test, theta_min = theta_min_log, theta_max = theta_max_log)
+        m_test_log, t_test_log, delta_test_log, cured_test_log = \
+            generate_data(log_a_log, log_phi_log, theta_test_log, sup_log, low_c, high_c)
+        # Save the DataFrame with the simulated values for the Logarithmic
+        log_data = join_datasets(
             n_train, n_val, n_test,
-            theta_train_borel, theta_val_borel, theta_test_borel,
-            m_train_borel, m_val_borel, m_test_borel,
-            t_train_borel, t_val_borel, t_test_borel,
-            delta_train_borel, delta_val_borel, delta_test_borel
+            theta_train_log, theta_val_log, theta_test_log,
+            m_train_log, m_val_log, m_test_log,
+            t_train_log, t_val_log, t_test_log,
+            delta_train_log, delta_val_log, delta_test_log
         )
-        borel_data.to_csv("{}/borel/{}".format(directory, filename), index = False)
+        log_data.to_csv("{}/logarithmic/{}".format(directory, filename), index = False)
+
+    if(distribution == "rgp2"):
+        q = 2.0
+        # RGP(1/2) - Training data
+        theta_train_rgp2 = get_theta(log_a_rgp(q), log_phi_rgp(q), C_rgp(q), C_inv_rgp(q), sup_rgp(q), p_train, theta_min = theta_min_rgp, theta_max = theta_max_rgp(q))
+        m_train_rgp2, t_train_rgp2, delta_train_rgp2, cured_train_rgp2 = \
+            generate_data(log_a_rgp(q), log_phi_rgp(q), theta_train_rgp2, sup_rgp(q), low_c, high_c)
+        # RGP(1/2) - Validation data
+        theta_val_rgp2 = get_theta(log_a_rgp(q), log_phi_rgp(q), C_rgp(q), C_inv_rgp(q), sup_rgp(q), p_val, theta_min = theta_min_rgp, theta_max = theta_max_rgp(q))
+        m_val_rgp2, t_val_rgp2, delta_val_rgp2, cured_val_rgp2 = \
+            generate_data(log_a_rgp(q), log_phi_rgp(q), theta_val_rgp2, sup_rgp(q), low_c, high_c)
+        # RGP(1/2) - Test data
+        theta_test_rgp2 = get_theta(log_a_rgp(q), log_phi_rgp(q), C_rgp(q), C_inv_rgp(q), sup_rgp(q), p_test, theta_min = theta_min_rgp, theta_max = theta_max_rgp(q))
+        m_test_rgp2, t_test_rgp2, delta_test_rgp2, cured_test_rgp2 = \
+            generate_data(log_a_rgp(q), log_phi_rgp(q), theta_test_rgp2, sup_rgp(q), low_c, high_c)
+        # Save the DataFrame with the simulated values for the RGP(1/2)
+        rgp2_data = join_datasets(
+            n_train, n_val, n_test,
+            theta_train_rgp2, theta_val_rgp2, theta_test_rgp2,
+            m_train_rgp2, m_val_rgp2, m_test_rgp2,
+            t_train_rgp2, t_val_rgp2, t_test_rgp2,
+            delta_train_rgp2, delta_val_rgp2, delta_test_rgp2
+        )
+        rgp2_data.to_csv("{}/rgp2/{}".format(directory, filename), index = False)
 
         
 def sample_bootstrap_scenario3(distribution, train_labels, test_labels, cure_probs_dict):
@@ -686,14 +710,14 @@ if(__name__ == "__main__"):
     # sample_bootstrap_scenario2(3000, "geeta3", train_labels, test_labels)
 
     print("Creating directories structures for Scenario 3")
-    dists_scenario3 = ["poisson", "borel"]
+    dists_scenario3 = ["poisson", "logarithmic", "rgp2"]
     for dist in dists_scenario3:
         Path("SimulationDataset2/Scenario3/{}".format(dist)).mkdir(parents=True, exist_ok=True)
 
     np.random.seed(2000)
     for j in range(1, 101):
         sample_single_bootstrap_scenario1_index(
-            i_train, i_test, 500, 108, 108,
+            i_train, i_test, 1000, 214, 214,
             "SimulationDataset2/Scenario3", j,
             train_labels, test_labels
         )
@@ -703,10 +727,12 @@ if(__name__ == "__main__"):
     cure_probs_dict2 = {0: 0.95, 1: 0.9, 2: 0.8, 3: 0.7, 4: 0.6}
     cure_probs_dict2 = np.vectorize(cure_probs_dict2.get)
 
-    np.random.seed(12)
-    print("Sampling Poisson n500 for Scenario 3")
+    np.random.seed(200)
+    print("Sampling Poisson n1000 for Scenario 3")
     sample_bootstrap_scenario3("poisson", train_labels, test_labels, cure_probs_dict1)
-    print("Sampling Borel n500 for Scenario 3")
-    sample_bootstrap_scenario3("borel", train_labels, test_labels, cure_probs_dict2)
+    print("Sampling Logarithmic n1000 for Scenario 3")
+    sample_bootstrap_scenario3("logarithmic", train_labels, test_labels, cure_probs_dict1)
+    print("Sampling RPG(q = 2) n1000 for Scenario 3")
+    sample_bootstrap_scenario3("rgp2", train_labels, test_labels, cure_probs_dict2)
 
     

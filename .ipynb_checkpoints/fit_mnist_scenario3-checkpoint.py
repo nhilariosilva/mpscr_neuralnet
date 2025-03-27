@@ -276,13 +276,14 @@ def run_scenario(data_dir, distribution, q, real_distribution, train_images, tes
         converged = sim_metadata["converged"].to_list()
         steps = sim_metadata["steps"].to_list()
     else:
+        start_index = 1
         execution_times = []
         loss_values = []
         loss_val_values = []
         converged = []
         steps = []
     
-    for i in tqdm(range(start_index, 101)):
+    for i in tqdm(range(start_index, 21)):
         # Load the simulated dataset
         sim_dataset = load_file(data_dir, i, real_distribution, train_images, test_images)
         
@@ -351,22 +352,23 @@ if(__name__ == "__main__"):
 
     print("Creating directories structure")
 
-    dists_real_scenario3 = ["poisson", "borel"]
-    dists_fitted_scenario3 = ["poisson", "rgp10", "geometric", "borel", "haight", "rgp2"]
+    dists_real_scenario3 = ["poisson", "logarithmic", "rgp2"]
+    dists_fitted_scenario3 = ["poisson", "geometric", "bernoulli", "bin5", "logarithmic", "rgp10", "mvnb2", "borel", "haight", "geeta3", "rgp2"]
     for dist_real in dists_real_scenario3:
         for dist_fitted in dists_fitted_scenario3:
             for j in range(1,101):
-                if(dist_real == "poisson" and dist_fitted in ["poisson", "rgp10", "geometric", "borel"]):
-                    Path("SimulationResults2/Scenario3/{}/{}/{}".format(dist_real, dist_fitted,j)).mkdir(parents=True, exist_ok=True)
-                if(dist_real == "borel" and dist_fitted in ["borel", "haight", "rgp2", "poisson"]):
-                    Path("SimulationResults2/Scenario3/{}/{}/{}".format(dist_real, dist_fitted,j)).mkdir(parents=True, exist_ok=True)
+                Path("SimulationResults2/Scenario3/{}/{}/{}".format(dist_real, dist_fitted,j)).mkdir(parents=True, exist_ok=True)
+                Path("SimulationResults2/Scenario3/{}/{}/{}".format(dist_real, dist_fitted,j)).mkdir(parents=True, exist_ok=True)
                     
     # Define here which simulations are to be executed now
-    data_dir = ["SimulationDataset2/Scenario3", "SimulationDataset2/Scenario3", "SimulationDataset2/Scenario3", "SimulationDataset2/Scenario3"]
-    distributions = ["poisson", "rgp10", "geometric", "borel"]
-    real_distributions = ["poisson", "poisson", "poisson", "poisson"]
-    qs = [None, -1/10, None, None]
-    start_indices = [None, None, None, None]
+    data_dir = ["SimulationDataset2/Scenario3", "SimulationDataset2/Scenario3", "SimulationDataset2/Scenario3",
+                "SimulationDataset2/Scenario3", "SimulationDataset2/Scenario3", "SimulationDataset2/Scenario3",
+                "SimulationDataset2/Scenario3", "SimulationDataset2/Scenario3", "SimulationDataset2/Scenario3",
+                "SimulationDataset2/Scenario3", "SimulationDataset2/Scenario3"]
+    distributions = ["poisson", "geometric", "bernoulli", "bin5", "logarithmic", "rgp10", "mvnb2", "borel", "haight", "geeta3", "rgp2"]
+    real_distributions = ["poisson", "poisson", "poisson", "poisson", "poisson", "poisson", "poisson", "poisson", "poisson", "poisson", "poisson"]
+    qs = [None, None, None, 5.0, None, -1/10, 1/2, None, None, 3.0, 2.0]
+    start_indices = [None, None, None, None, None, None, None, None, None, None, None]
 
     for j in range(len(data_dir)):
         finished = False
@@ -393,7 +395,7 @@ if(__name__ == "__main__"):
             if(current_start_index > 100):
                 break
             try:
-                print("------------------- Starting {} in {} -------------------".format(distributions[j], data_dir[j]))
+                print("------------------- Starting {} in {}/{} -------------------".format(distributions[j], data_dir[j], real_distributions[j]))
                 run_scenario(data_dir[j], distributions[j], qs[j], real_distributions[j], train_images, test_images, start_index = current_start_index, seed = 1)
                 # If the command above finished, it goes to the next scenario
                 finished = True
